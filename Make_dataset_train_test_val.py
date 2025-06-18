@@ -18,7 +18,7 @@ def move_files(src_images_dir, src_labels_dir, dst_images_dir, dst_labels_dir, f
             raise FileNotFoundError(f'Label file not found for {file_name}')
 
 # 設定資料集目錄
-path = input("輸入dataset資料夾位置")
+path = input("\n    請輸入dataset資料夾位置: ")
 dataset_dir = str(path)
 images_dir = os.path.join(dataset_dir, 'images')
 labels_dir = os.path.join(dataset_dir, 'labels')

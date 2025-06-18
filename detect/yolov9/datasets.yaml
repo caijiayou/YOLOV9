@@ -1,0 +1,5 @@
+train: /content/yolov9/data/datasets/images/train
+val: /content/yolov9/data/datasets/images/val
+test: /content/yolov9/data/datasets/images/test
+nc: 1
+names: ['player']
