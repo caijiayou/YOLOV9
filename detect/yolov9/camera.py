@@ -11,7 +11,7 @@ import numpy as np
 
 # 初始化模型（只做一次）
 device = select_device('')
-weights = Path(r'C:\Users\ab881\OneDrive\桌面\YOLOV9教材\YOLOV9\detect\yolov9\best.pt')
+weights = Path(r'C:\Users\ab881\OneDrive\桌面\YOLOV9教材\YOLOV9\dataset\best.pt')
 data = Path('datasets.yaml')
 model = DetectMultiBackend(weights, device=device, data=data, fp16=False)
 stride, names, pt = model.stride, model.names, model.pt
