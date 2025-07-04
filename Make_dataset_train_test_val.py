@@ -3,27 +3,31 @@ import shutil
 import random
 
 def move_files(src_images_dir, src_labels_dir, dst_images_dir, dst_labels_dir, file_list):
+    moved_count = 0  # 計算移動的圖片數量
     for file_name in file_list:
         base_name, _ = os.path.splitext(file_name)
         src_img = os.path.join(src_images_dir, file_name)
         dst_img = os.path.join(dst_images_dir, file_name)
-        shutil.move(src_img, dst_img)
         
         label_file = base_name + '.txt'
         src_label = os.path.join(src_labels_dir, label_file)
         dst_label = os.path.join(dst_labels_dir, label_file)
+
         if os.path.exists(src_label):
+            shutil.move(src_img, dst_img)
             shutil.move(src_label, dst_label)
+            moved_count += 1
         else:
-            raise FileNotFoundError(f'Label file not found for {file_name}')
+            print(f'⚠️ 警告：找不到標籤檔，已跳過 {file_name}')
+    return moved_count
 
 # 輸入資料集路徑
 path = input("\n    請輸入dataset資料夾位置: ")
-dataset_dir = str(path)
+dataset_dir = str(path).strip()
 images_dir = os.path.join(dataset_dir, 'images')
 labels_dir = os.path.join(dataset_dir, 'labels')
 
-# 新結構：images/train, images/test, images/val
+# 建立新結構：images/train, images/test, images/val
 train_images_dir = os.path.join(images_dir, 'train')
 test_images_dir = os.path.join(images_dir, 'test')
 val_images_dir = os.path.join(images_dir, 'val')
@@ -31,7 +35,7 @@ os.makedirs(train_images_dir, exist_ok=True)
 os.makedirs(test_images_dir, exist_ok=True)
 os.makedirs(val_images_dir, exist_ok=True)
 
-# 新結構：labels/train, labels/test, labels/val
+# 建立新結構：labels/train, labels/test, labels/val
 train_labels_dir = os.path.join(labels_dir, 'train')
 test_labels_dir = os.path.join(labels_dir, 'test')
 val_labels_dir = os.path.join(labels_dir, 'val')
@@ -54,9 +58,15 @@ test_images = all_images[split1:split2]
 val_images = all_images[split2:]
 
 # 執行移動
-move_files(images_dir, labels_dir, train_images_dir, train_labels_dir, train_images)
-move_files(images_dir, labels_dir, test_images_dir, test_labels_dir, test_images)
-move_files(images_dir, labels_dir, val_images_dir, val_labels_dir, val_images)
+print("\n🚚 開始移動檔案...")
+train_count = move_files(images_dir, labels_dir, train_images_dir, train_labels_dir, train_images)
+test_count = move_files(images_dir, labels_dir, test_images_dir, test_labels_dir, test_images)
+val_count = move_files(images_dir, labels_dir, val_images_dir, val_labels_dir, val_images)
+
+print(f"\n✅ 資料集分割完成：")
+print(f"訓練集：{train_count} 張圖片")
+print(f"測試集：{test_count} 張圖片")
+print(f"驗證集：{val_count} 張圖片")
 
 # 複製 classes.txt 到每個 labels 子資料夾中
 classes_file = os.path.join(labels_dir, 'classes.txt')
