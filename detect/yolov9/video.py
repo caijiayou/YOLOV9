@@ -11,15 +11,15 @@ import numpy as np
 
 # 初始化模型（只做一次）
 device = select_device('')  # CPU 或 GPU 自動選擇
-weights = Path(r'C:\Users\ab881\OneDrive\桌面\YOLOV9\detect\yolov9\best.pt')
+weights = Path(r'C:\Users\ab881\OneDrive\桌面\練習程式碼\weights\crack\best.pt')
 data = Path('datasets.yaml')
 model = DetectMultiBackend(weights, device=device, data=data, fp16=False)
 stride, names, pt = model.stride, model.names, model.pt
 imgsz = check_img_size((640, 640), s=stride)
 
 # 打開影片
-input_path = "input_video.mp4"  # 你的輸入影片路徑
-output_path = "output_video.mp4"  # 輸出影片路徑
+input_path = input("你的輸入影片路徑: ")
+output_path = input("輸出影片路徑: ")
 
 cap = cv2.VideoCapture(input_path)
 if not cap.isOpened():
