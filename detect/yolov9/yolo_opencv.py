@@ -36,8 +36,9 @@ def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), stride=32, auto=T
     return im
 
 def main():
-    device = select_device('cpu')
-    weights = Path(r"C:\Users\ab881\OneDrive\桌面\練習程式碼\weights\face&phone\best.pt")
+    device = select_device('')  # 自動選 CPU / GPU
+    # 這裡要換成你權重的路徑
+    weights = Path(r"C:\Users\OneDrive\桌面\練習程式碼\weights\face&phone\best.pt")
     data = Path('datasets.yaml')
 
     model = DetectMultiBackend(weights, device=device, data=data, fp16=False)

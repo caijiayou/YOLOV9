@@ -16,7 +16,8 @@ from utils.augmentations import letterbox
 # 初始化模型（只做一次）
 # =========================
 device = select_device('')  # 自動選 CPU / GPU
-weights = Path(r"C:\Users\ab881\OneDrive\桌面\練習程式碼\weights\face&phone\best.pt")
+# 這裡要換成你權重的路徑
+weights = Path(r"C:\Users\OneDrive\桌面\練習程式碼\weights\face&phone\best.pt")
 data = Path('datasets.yaml')
 
 model = DetectMultiBackend(weights, device=device, data=data, fp16=False)

@@ -5,7 +5,7 @@ import cv2
 import os
 import numpy as np
 
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Windows 強烈建議加 CAP_DSHOW
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  
 if not cap.isOpened():
     print("❌ Cannot open camera")
     exit()
