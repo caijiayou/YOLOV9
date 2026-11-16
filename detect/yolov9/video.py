@@ -8,10 +8,11 @@ from utils.general import non_max_suppression, scale_boxes, check_img_size
 from utils.torch_utils import select_device
 from utils.plots import colors
 import numpy as np
+from utils.augmentations import letterbox
 
 # 初始化模型（只做一次）
 device = select_device('')  # CPU 或 GPU 自動選擇
-weights = Path(r'C:\Users\ab881\OneDrive\桌面\練習程式碼\weights\crack\best.pt')
+weights = Path(r"C:\Users\Administrator\Desktop\Yolo2026\20261120練習程式碼\練習程式碼\weights\PV_3D\best.pt")
 data = Path('datasets.yaml')
 model = DetectMultiBackend(weights, device=device, data=data, fp16=False)
 stride, names, pt = model.stride, model.names, model.pt
@@ -41,7 +42,8 @@ while True:
 
     frame_idx += 1
     # --- YOLOv9 預處理 ---
-    im = cv2.resize(frame, imgsz)
+    # im = cv2.resize(frame, imgsz)
+    im = letterbox(frame, imgsz, stride=stride, auto=True)[0]
     im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
     im = np.ascontiguousarray(im)
     im = torch.from_numpy(im).to(device)
@@ -61,10 +63,26 @@ while True:
             for *xyxy, conf, cls in reversed(det):
                 label = f'{names[int(cls)]} {conf:.2f}'
                 color = colors(int(cls), True)
-                cv2.rectangle(frame, (int(xyxy[0]), int(xyxy[1])),
-                              (int(xyxy[2]), int(xyxy[3])), color, 2)
+                cv2.rectangle(frame, (int(xyxy[0]), int(xyxy[1])), 
+                            (int(xyxy[2]), int(xyxy[3])), color, 4)
                 cv2.putText(frame, label, (int(xyxy[0]), int(xyxy[1]-5)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 4)
+
+    # --- 統計每個類別的數量 ---
+    counts = {i: 0 for i in range(len(names))}       # 每一類先設 0，沒偵測到也會顯示 0
+    for det in pred:
+        for c in det[:, 5].int().tolist():          # 第 5 欄 = 類別編號 [x1, y1, x2, y2, conf, cls]
+            counts[c] += 1
+    # --- 顯示在畫面左上角 ---
+    lines = [f'Total: {sum(counts.values())}'] + [f'{names[i]}: {n}' for i, n in counts.items()]
+    fs = max(0.6, width / 1600)                     # 字體大小隨影片寬度調整
+    th = int(fs * 2)                                # 字的粗細
+    line_h = int(35 * fs)                           # 行高
+    box_w = int(max(cv2.getTextSize(t, cv2.FONT_HERSHEY_SIMPLEX, fs, th)[0][0] for t in lines)) + 20
+    cv2.rectangle(frame, (10, 10), (10 + box_w, 20 + line_h * len(lines)), (0, 0, 0), -1)   # 黑底
+    for k, t in enumerate(lines):
+        color = (255, 255, 255) if k == 0 else colors(k - 1, True)   # 和框同色
+        cv2.putText(frame, t, (20, 10 + line_h * (k + 1)), cv2.FONT_HERSHEY_SIMPLEX, fs, color, th)
 
     # 寫入影片
     out.write(frame)
